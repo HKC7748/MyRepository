@@ -6,13 +6,13 @@
     <title>跟随鼠标的小球</title>
     <style>
         body {
-            /* 移除默认的边距，让画布充满整个窗口 */
             margin: 0;
             overflow: hidden;
             background-color: #f0f0f0;
+            /* 禁止页面滚动，避免触摸时页面抖动 */
+            touch-action: none;
         }
         #myCanvas {
-            /* 设置画布为块级元素并充满视口 */
             display: block;
             width: 100vw;
             height: 100vh;
@@ -20,55 +20,55 @@
     </style>
 </head>
 <body>
-    <!-- 1. 创建画布 -->
     <canvas id="myCanvas"></canvas>
 
     <script>
-        // 2. 获取画布和其绘图上下文
         const canvas = document.getElementById('myCanvas');
         const ctx = canvas.getContext('2d');
 
-        // 3. 设置画布尺寸为整个浏览器窗口大小
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
-        // 初始设置一次尺寸，并监听窗口大小变化事件
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        // 4. 定义小球的属性
         const ball = {
-            x: canvas.width / 2, // 初始x坐标（画布中心）
-            y: canvas.height / 2, // 初始y坐标（画布中心）
-            radius: 30, // 小球半径
-            color: '#3498db' // 小球颜色
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 30,
+            color: '#3498db'
         };
 
-        // 5. 绘制小球的函数
         function drawBall() {
-            // 在绘制新帧前，清除整个画布
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
             ctx.beginPath();
-            // 使用arc方法画圆：参数为圆心x, 圆心y, 半径, 起始角, 结束角
             ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
             ctx.fillStyle = ball.color;
             ctx.fill();
             ctx.closePath();
         }
 
-        // 6. 监听鼠标移动事件，更新小球圆心坐标
+        // 电脑端：鼠标移动事件
         canvas.addEventListener('mousemove', (event) => {
             ball.x = event.clientX;
             ball.y = event.clientY;
-            // 坐标更新后，重新绘制小球
             drawBall();
         });
 
-        // 7. 初始绘制一次
+        // 手机端：触摸移动事件
+        canvas.addEventListener('touchmove', (event) => {
+            // 阻止默认行为（如页面滚动）
+            event.preventDefault();
+            // 获取第一个触摸点
+            const touch = event.touches[0];
+            ball.x = touch.clientX;
+            ball.y = touch.clientY;
+            drawBall();
+        });
+
+        // 初始绘制
         drawBall();
     </script>
 </body>
-
 </html>
